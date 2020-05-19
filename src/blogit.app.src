@@ -5,7 +5,8 @@
   {mod, {blogit_app, []}},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    gun
    ]},
   {env,[]},
   {modules, []},
