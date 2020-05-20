@@ -12,6 +12,7 @@ run(Path) ->
     logger:info("running inserter with path ~s", [Path]),
     Repo = blogit_git:open_repo(Path),
     DB = blogit_sup:get_db(),
+    blogit_git:pull(Repo),
     OldHead = case blogit_db:get_head(DB) of
                   {ok, Sha} -> Sha;
                   {error, not_found} -> not_found

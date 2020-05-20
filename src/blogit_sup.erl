@@ -34,8 +34,11 @@ init([]) ->
                  intensity => 3,
                  period => 30},
     ChildSpecs = [#{id => blogit_db,
-                    start => {blogit_db, start_link, [#{address => "localhost"}]}
-                   }
+                    start => {blogit_db, start_link,
+                              [#{address => "localhost"}]}},
+                  #{id => blogit_process_sup,
+                    start => {blogit_process_sup, start_link, []},
+                    type => supervisor}
                  ],
     {ok, {SupFlags, ChildSpecs}}.
 
