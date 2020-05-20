@@ -1,0 +1,19 @@
+div.content {
+    max-width: 940px;
+    margin: 20px auto 10px auto;
+    background-color: #fff;
+    padding: 0px 3px 3px 3px;
+    font-family: helvetica, arial, sans-serif;
+}
+
+div.title-bar {
+    text-align: center;
+}
+
+body {
+    background-color: #eee;
+}
+
+h1 {
+    font-size: 3em;
+}
