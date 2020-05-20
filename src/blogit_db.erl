@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 -export([start_link/1, get_head/1, has_entry/2, insert_metadata/3,
-         update_metadata/3, insert_blog/3, store_head/2]).
+         update_metadata/3, insert_blog/3, store_head/2, get_latest_entries/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2]).
 
 -record(state, {address :: string(),
@@ -42,6 +42,10 @@ insert_blog(Pid, ID, Data) ->
 store_head(Pid, Data) ->
     gen_server:call(Pid, {store_head, Data}).
 
+-spec get_latest_entries(pid(), non_neg_integer()) -> [any()].
+get_latest_entries(Pid, Count) ->
+    gen_server:call(Pid, {get_latest_entries, Count}).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% gen_server callbacks
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,7 +68,9 @@ handle_call({update_metadata, ID, Data}, _From, S=#state{connection=Conn}) ->
 handle_call({insert_blog, ID, Data}, _From, S=#state{connection=Conn}) ->
     {reply, insert_blog_(Conn, ID, Data), S};
 handle_call({store_head, Data}, _From, S=#state{connection=Conn}) ->
-    {reply, store_head_(Conn, Data), S}.
+    {reply, store_head_(Conn, Data), S};
+handle_call({get_latest_entries, Count}, _From, S=#state{connection=Conn}) ->
+    {reply, get_latest_entries_(Conn, Count), S}.
 
 handle_cast(connect, S=#state{address=Address, port=Port}) ->
     {ok, ConnPid} = gun:open(Address, Port),
@@ -171,8 +177,22 @@ store_head_(Conn, Head) ->
             exit(Status)
     end.
 
-
-
+get_latest_entries_(Conn, Count) ->
+    Query = lists:flatten(io_lib:format("/entry/_design/blogs/_view/blog-index"
+                                        "?descending=true"
+                                        "&limit=~w"
+                                        "&include_docs=true",
+                                        [Count])),
+    {200, JsonData} = auth_get(Conn, Query),
+    #{<<"rows">> := Data} = jsone:decode(JsonData),
+    F = fun(#{<<"doc">> := Doc}) ->
+                #{<<"title">> := Title, <<"blog">> := Blog,
+                  <<"timestamp">> := Timestamp} = Doc,
+                Author = maps:get(<<"author">>, Doc, <<"anonymous">>),
+                #{title => Title, blog => Blog, timestamp => Timestamp,
+                  author => Author}
+        end,
+    lists:map(F, Data).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

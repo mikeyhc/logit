@@ -31,7 +31,7 @@ ls_files(Git, Commit) ->
 -spec diff_files(blogit_git_repo(), string(), string()) -> [string()].
 diff_files(Git, Commit1, Commit2) ->
     Data = git_exec(Git, "diff --name-only ~s ~s", [Commit1, Commit2]),
-    string:split(string:trim(Data), "\n").
+    string:split(string:trim(Data), "\n", all).
 
 -spec dir(blogit_git_repo()) -> string().
 dir(#blogit_git_repo{path=Path}) -> Path.

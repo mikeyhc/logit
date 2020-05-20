@@ -30,6 +30,7 @@ process_files(Repo, DB, OldHead, Head) ->
                 _ -> blogit_git:diff_files(Repo, OldHead, Head)
             end,
     Root = blogit_git:dir(Repo),
+    logger:info("found changed files ~p", [Files]),
     Metadata = lists:filter(fun is_metadata/1, Files),
     logger:info("found ~p metadata updates", [length(Metadata)]),
     Blogs = lists:filter(fun is_blog/1, Files),
