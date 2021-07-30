@@ -49,7 +49,6 @@ write_metadata(DB, Root, File) ->
         false -> blogit_db:insert_metadata(DB, ID, Data)
     end.
 
-
 write_blog(DB, Root, File) ->
     ID = get_id(File),
     case blogit_db:has_entry(DB, ID) of

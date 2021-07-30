@@ -7,7 +7,8 @@
 -export([p/1, p/2]).
 -export([hr/0]).
 
--type option() :: {binary() | string(), binary(), string()}.
+-type text() :: binary() | string().
+-type option() :: {text(), text()}.
 
 -spec html(iolist()) -> iolist().
 html(Parts) -> html(Parts, []).
@@ -86,7 +87,7 @@ hr() -> <<"<hr />">>.
 option_join({K, V}) ->
     [<<" ">>, K, <<"=\"">>, V, <<"\"">>].
 
-build_tag(Tag,Parts) ->
+build_tag(Tag, Parts) ->
     [<<"<">>, Tag, <<">">>, Parts, <<"</">>, Tag, <<">">>].
 
 build_tag(Tag, Parts, Options) ->

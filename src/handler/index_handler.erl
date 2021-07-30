@@ -8,9 +8,9 @@ init(Req0, State) ->
     Req = cowboy_req:reply(200,
                            #{<<"content-type">> => <<"text/html">>},
                            page_build(
-                             "Mikey's Workshop",
+                             "Blog",
                              content_div(
-                               [page_title("Mikey's Workshop"),
+                               [page_title("Blog"),
                                 blog_list(DB)
                                ])),
                            Req0),

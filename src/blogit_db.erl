@@ -185,19 +185,19 @@ get_latest_entries_(Conn, Count) ->
                                         [Count])),
     {200, JsonData} = auth_get(Conn, Query),
     #{<<"rows">> := Data} = jsone:decode(JsonData),
-    F = fun(#{<<"doc">> := Doc}) ->
-                #{<<"title">> := Title, <<"blog">> := Blog,
-                  <<"timestamp">> := Timestamp} = Doc,
-                Author = maps:get(<<"author">>, Doc, <<"anonymous">>),
-                #{title => Title, blog => Blog, timestamp => Timestamp,
-                  author => Author}
-        end,
-    lists:map(F, Data).
+    lists:map(fun json_to_blog/1, Data).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% helper methods
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+json_to_blog(#{<<"doc">> := Doc}) ->
+    #{<<"title">> := Title, <<"blog">> := Blog,
+      <<"timestamp">> := Timestamp} = Doc,
+    Author = maps:get(<<"author">>, Doc, <<"anonymous">>),
+    #{title => Title, blog => Blog, timestamp => Timestamp,
+      author => Author}.
 
 timestamp() ->
     {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
